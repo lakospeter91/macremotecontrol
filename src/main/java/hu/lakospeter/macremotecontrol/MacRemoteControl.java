@@ -38,7 +38,8 @@ public class MacRemoteControl implements AppleRemoteListener {
     }
 
     private MacRemoteControl() {
-        GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        final GraphicsDevice graphicsDevice =
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         screenWidth = graphicsDevice.getDisplayMode().getWidth();
         screenHeight = graphicsDevice.getDisplayMode().getHeight();
 
