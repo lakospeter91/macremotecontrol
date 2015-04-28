@@ -6,6 +6,10 @@ import hu.lakospeter.macremotecontrol.actions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 
 /**
@@ -15,24 +19,47 @@ public class MacRemoteControl implements AppleRemoteListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigFileReader.class);
     // TODO add ability to select this config file from a file chooser
-    private static final String CONFIG_FILE_SYSTEM_PROPERTY = "hu.lakospeter.macremotecontrol.configFile";
-    private static final String DEFAULT_CONFIG_FILE_PATH_AND_NAME = "config/default.json";
-    private final Map<RemoteControlAction, AAction> actions;
+    private static final String CONFIG_FILE_NAME = "config.json";
+    private static final String CONFIG_FILE_PATH_AND_NAME = System.getProperty("user.home")
+                                                    + "/Library/Application Support/hu.lakospeter.macremotecontrol/"
+                                                    + CONFIG_FILE_NAME;
+    private Map<RemoteControlAction, AAction> actions;
 
     private MacRemoteControl() {
         final Controller controller = new Controller(this);
-        final String configFilePathAndName = getConfigFilePathAndName();
-        final ConfigFileReader configFileReader = ConfigFileReader.getInstance(configFilePathAndName, controller);
-        actions = configFileReader.getActions();
+        try {
+            createConfigFileIfNotExist();
+            final ConfigFileReader configFileReader = ConfigFileReader.getInstance(CONFIG_FILE_PATH_AND_NAME, controller);
+            actions = configFileReader.getActions();
+        } catch (Exception ex) {
+            LOG.error("Could not create the config file.");
+        }
     }
 
-    private String getConfigFilePathAndName() {
-        String configFilePathAndName = System.getProperty(CONFIG_FILE_SYSTEM_PROPERTY);
-        if (configFilePathAndName == null || configFilePathAndName.length() == 0) {
-            LOG.warn("Invalid config file path specified. Using " + DEFAULT_CONFIG_FILE_PATH_AND_NAME);
-            return DEFAULT_CONFIG_FILE_PATH_AND_NAME;
+    public void createConfigFileIfNotExist() throws Exception {
+        final File configFile = new File(CONFIG_FILE_PATH_AND_NAME);
+        if (!configFile.exists() || configFile.isDirectory()) {
+            configFile.getParentFile().mkdirs();
+            configFile.createNewFile();
+            exportDefaultConfigFileFromJar();
         }
-        return configFilePathAndName;
+    }
+
+    private void exportDefaultConfigFileFromJar() throws Exception {
+        final InputStream inputStream = MacRemoteControl.class.getResourceAsStream("/" + CONFIG_FILE_NAME);
+        if(inputStream == null) {
+            throw new Exception("Could not find config file in the macremotecontrol jar file.");
+        }
+        final OutputStream outputStream = new FileOutputStream(CONFIG_FILE_PATH_AND_NAME);
+
+        int readBytes;
+        byte[] buffer = new byte[4096];
+        while ((readBytes = inputStream.read(buffer)) > 0) {
+            outputStream.write(buffer, 0, readBytes);
+        }
+
+        inputStream.close();
+        outputStream.close();
     }
 
     @Override
