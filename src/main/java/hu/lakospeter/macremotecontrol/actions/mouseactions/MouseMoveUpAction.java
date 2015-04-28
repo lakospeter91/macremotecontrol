@@ -2,6 +2,7 @@ package hu.lakospeter.macremotecontrol.actions.mouseactions;
 
 
 import hu.lakospeter.macremotecontrol.Controller;
+import hu.lakospeter.macremotecontrol.Direction;
 import hu.lakospeter.macremotecontrol.actions.AAction;
 
 public class MouseMoveUpAction extends AAction {
@@ -13,6 +14,6 @@ public class MouseMoveUpAction extends AAction {
     @Override
     public void doAction() {
         controller.startMoveMouse();
-        controller.moveMouse(Controller.Direction.UP);
+        controller.moveMouse(Direction.UP);
     }
 }

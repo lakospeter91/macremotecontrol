@@ -2,6 +2,7 @@ package hu.lakospeter.macremotecontrol.actions.mouseactions;
 
 
 import hu.lakospeter.macremotecontrol.Controller;
+import hu.lakospeter.macremotecontrol.Direction;
 import hu.lakospeter.macremotecontrol.actions.AAction;
 
 public class MouseNudgeDownAction extends AAction {
@@ -12,6 +13,6 @@ public class MouseNudgeDownAction extends AAction {
 
     @Override
     public void doAction() {
-        controller.nudgeMouse(Controller.Direction.DOWN);
+        controller.nudgeMouse(Direction.DOWN);
     }
 }

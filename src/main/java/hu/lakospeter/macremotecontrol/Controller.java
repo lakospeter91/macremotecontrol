@@ -42,18 +42,6 @@ public class Controller {
         }
     }
 
-    public enum Direction {
-        UP,
-        DOWN,
-        LEFT,
-        RIGHT
-    }
-
-    public enum MouseButton {
-        LEFT,
-        RIGHT
-    }
-
     private Point getMousePosition() {
         final PointerInfo pointerInfo = MouseInfo.getPointerInfo();
         return pointerInfo.getLocation();

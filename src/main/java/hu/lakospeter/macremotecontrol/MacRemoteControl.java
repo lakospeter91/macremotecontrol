@@ -3,9 +3,9 @@ package hu.lakospeter.macremotecontrol;
 import hu.lakospeter.appleremote4j.AppleRemoteEvent;
 import hu.lakospeter.appleremote4j.AppleRemoteListener;
 import hu.lakospeter.macremotecontrol.actions.*;
-import hu.lakospeter.macremotecontrol.actions.mouseactions.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -13,53 +13,26 @@ import java.util.Map;
  */
 public class MacRemoteControl implements AppleRemoteListener {
 
-    private final Controller controller;
-    private final Map<RemoteControlAction, AAction> actions = new HashMap<>();
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigFileReader.class);
+    // TODO add ability to select this config file from a file chooser
+    private static final String CONFIG_FILE_SYSTEM_PROPERTY = "hu.lakospeter.macremotecontrol.configFile";
+    private static final String DEFAULT_CONFIG_FILE_PATH_AND_NAME = "config/default.json";
+    private final Map<RemoteControlAction, AAction> actions;
 
     private MacRemoteControl() {
-        controller = new Controller(this);
-        addActions();
+        final Controller controller = new Controller(this);
+        final String configFilePathAndName = getConfigFilePathAndName();
+        final ConfigFileReader configFileReader = ConfigFileReader.getInstance(configFilePathAndName, controller);
+        actions = configFileReader.getActions();
     }
 
-    private enum RemoteControlAction {
-        VOLUME_UP_PRESSED,
-        VOLUME_UP_HOLD_STARTED,
-        VOLUME_UP_HOLD_STOPPED,
-        VOLUME_DOWN_PRESSED,
-        VOLUME_DOWN_HOLD_STARTED,
-        VOLUME_DOWN_HOLD_STOPPED,
-        PREVIOUS_PRESSED,
-        PREVIOUS_HOLD_STARTED,
-        PREVIOUS_HOLD_STOPPED,
-        NEXT_PRESSED,
-        NEXT_HOLD_STARTED,
-        NEXT_HOLD_STOPPED,
-        PLAY_PAUSE_PRESSED,
-        PLAY_PAUSE_HELD,
-        MENU_PRESSED,
-        MENU_HELD,
-        SELECT_PRESSED
-    }
-
-    private void addActions() {
-        // TODO read these from config files
-        actions.put(RemoteControlAction.VOLUME_UP_PRESSED, new MouseNudgeUpAction(controller));
-        actions.put(RemoteControlAction.VOLUME_UP_HOLD_STARTED, new MouseMoveUpAction(controller));
-        actions.put(RemoteControlAction.VOLUME_UP_HOLD_STOPPED, new MouseMoveStopAction(controller));
-        actions.put(RemoteControlAction.VOLUME_DOWN_PRESSED, new MouseNudgeDownAction(controller));
-        actions.put(RemoteControlAction.VOLUME_DOWN_HOLD_STARTED, new MouseMoveDownAction(controller));
-        actions.put(RemoteControlAction.VOLUME_DOWN_HOLD_STOPPED, new MouseMoveStopAction(controller));
-        actions.put(RemoteControlAction.PREVIOUS_PRESSED, new MouseNudgeLeftAction(controller));
-        actions.put(RemoteControlAction.PREVIOUS_HOLD_STARTED, new MouseMoveLeftAction(controller));
-        actions.put(RemoteControlAction.PREVIOUS_HOLD_STOPPED, new MouseMoveStopAction(controller));
-        actions.put(RemoteControlAction.NEXT_PRESSED, new MouseNudgeRightAction(controller));
-        actions.put(RemoteControlAction.NEXT_HOLD_STARTED, new MouseMoveRightAction(controller));
-        actions.put(RemoteControlAction.NEXT_HOLD_STOPPED, new MouseMoveStopAction(controller));
-        actions.put(RemoteControlAction.PLAY_PAUSE_PRESSED, new MouseLeftClickAction(controller));
-        actions.put(RemoteControlAction.PLAY_PAUSE_HELD, new QuitAction(controller));
-        actions.put(RemoteControlAction.MENU_PRESSED, new MouseRightClickAction(controller));
-        actions.put(RemoteControlAction.MENU_HELD, new DoNothingAction(controller));
-        actions.put(RemoteControlAction.SELECT_PRESSED, new MouseLeftClickAction(controller));
+    private String getConfigFilePathAndName() {
+        String configFilePathAndName = System.getProperty(CONFIG_FILE_SYSTEM_PROPERTY);
+        if (configFilePathAndName == null || configFilePathAndName.length() == 0) {
+            LOG.warn("Invalid config file path specified. Using " + DEFAULT_CONFIG_FILE_PATH_AND_NAME);
+            return DEFAULT_CONFIG_FILE_PATH_AND_NAME;
+        }
+        return configFilePathAndName;
     }
 
     @Override

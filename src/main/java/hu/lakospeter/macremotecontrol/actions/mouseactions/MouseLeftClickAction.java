@@ -2,6 +2,7 @@ package hu.lakospeter.macremotecontrol.actions.mouseactions;
 
 
 import hu.lakospeter.macremotecontrol.Controller;
+import hu.lakospeter.macremotecontrol.MouseButton;
 import hu.lakospeter.macremotecontrol.actions.AAction;
 
 public class MouseLeftClickAction extends AAction {
@@ -12,6 +13,6 @@ public class MouseLeftClickAction extends AAction {
 
     @Override
     public void doAction() {
-        controller.clickMouse(Controller.MouseButton.LEFT);
+        controller.clickMouse(MouseButton.LEFT);
     }
 }
