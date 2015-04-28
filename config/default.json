@@ -1,0 +1,19 @@
+{
+  "volumeUpPressed" : "mouseNudgeUp",
+  "volumeUpHoldStarted" : "mouseMoveUp",
+  "volumeUpHoldStopped" : "mouseMoveStop",
+  "volumeDownPressed" : "mouseNudgeDown",
+  "volumeDownHoldStarted" : "mouseMoveDown",
+  "volumeDownHoldStopped" : "mouseMoveStop",
+  "previousPressed" : "mouseNudgeLeft",
+  "previousHoldStarted" : "mouseMoveLeft",
+  "previousHoldStopped" : "mouseMoveStop",
+  "nextPressed" : "mouseNudgeRight",
+  "nextHoldStarted" : "mouseMoveRight",
+  "nextHoldStopped" : "mouseMoveStop",
+  "playPausePressed" : "mouseLeftClick",
+  "playPauseHeld" : "quit",
+  "menuPressed" : "mouseRightClick",
+  "menuHeld" : "none",
+  "selectPressed" : "mouseLeftClick"
+}
